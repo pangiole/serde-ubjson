@@ -14,9 +14,9 @@ pub enum UbjMarker {
     Char           = 0x43,  // C
     Str            = 0x53,  // S
 
-    OpeningBracket = 0x5B, // [
-    ClosingBracket = 0x5D, // ]
+    OpeningBracket = 0x5B,  // [
+    ClosingBracket = 0x5D,  // ]
 
-    OpeningBrace   = 0x7B, // {
-    ClosingBrace   = 0x7D, // }
+    OpeningBrace   = 0x7B,  // {
+    ClosingBrace   = 0x7D,  // }
 }

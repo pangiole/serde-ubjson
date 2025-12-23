@@ -6,7 +6,7 @@ license = "WTFPL"
 authors = [
     "Paolo Angioletti <paolo.angioletti@gmail.com>"
 ]
-description = "Universal Binary JSON format for Rust with Serde, for both `std` and `no_std` environments."
+description = "Universal Binary JSON data format for Rust with Serde (both `std` and `no_std` environments)."
 repository = "https://github.com/pangiole/serde-ubj"
 keywords = [
     "serde",
@@ -31,5 +31,7 @@ alloc = ["serde/alloc"]
 [dependencies]
 serde = { version = "1.0.228", default-features = false}
 
+
 [dev-dependencies]
 serde = { version = "1.0.228", default-features = false, features = ["alloc", "derive"] }
+serde_bytes = { version = "0.11.19", default-features = false, features = ["alloc"] }

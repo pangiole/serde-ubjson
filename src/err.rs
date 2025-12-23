@@ -3,14 +3,19 @@ use crate::prelude::*;
 /// An error that can occur during serializing to (or deserializing from) Universal Binary JSON
 #[derive(Debug)]
 pub enum UbjError {
-    /// Error occurring during serialization when the type of value is not supported by the Universal Binary JSON format
-    UnsupportedType(&'static str),
+    // TODO Review the newtype variants taking a static string slice as we may need to leak memory
 
-    /// Error occurring during deserialization when a character is not valid in Universal Binary JSON format.
-    CharOutOfRange(char),
+    /// A legal value type for which this crate does not implement serialization/deserialization yet
+    UnimplementedValueType(&'static str),
+
+    /// An illegal key type which is not allowed in Universal Binary JSON format
+    IllegalKeyType(&'static str),
+
+    /// An illegal character which is not allowed in Universal Binary JSON format.
+    IllegalChar(char),
 
     /// Any other error defined by the user of this crate
-    Other(String),
+    Custom(String),
 
     /// Error occurring IO (Input/Output) against the underlying writer/reader
     IO(IoError),
@@ -20,9 +25,10 @@ pub enum UbjError {
 impl core::fmt::Display for UbjError {
     fn fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            UbjError::UnsupportedType(msg) =>  write!(formatter, "Unsupported type: {msg}"),
-            UbjError::CharOutOfRange(c) => { let code = *c as u32; write!(formatter, "Char out of range: {code:#x}") },
-            UbjError::Other(msg) =>  write!(formatter, "{msg}"),
+            UbjError::UnimplementedValueType(msg) =>  write!(formatter, "Unimplemented value type: {msg}"),
+            UbjError::IllegalKeyType(msg) =>  write!(formatter, "Illegal key type: {msg}"),
+            UbjError::IllegalChar(c) => { let code = *c as u32; write!(formatter, "Char out of range: {code:#x}") },
+            UbjError::Custom(msg) =>  write!(formatter, "{msg}"),
             UbjError::IO(err) =>  write!(formatter, "IO error occurred: {}", err),
         }
     }
@@ -41,7 +47,7 @@ use alloc::string::ToString;
 
 impl serde::ser::Error for UbjError {
     fn custom<T: core::fmt::Display>(msg: T) -> Self {
-        UbjError::Other(msg.to_string())
+        UbjError::Custom(msg.to_string())
     }
 }
 

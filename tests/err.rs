@@ -1,9 +1,10 @@
 use serde_ubj::UbjError;
 
 #[test]
-fn display_message_error() {
-    let err = UbjError::Other(String::from("An error occurred"));
-    assert_eq!(err.to_string().as_str(), "An error occurred");
+fn display_ser_custom_error() {
+    let msg = "An error occurred";
+    let err = <UbjError as serde::ser::Error>::custom(msg);
+    assert_eq!(err.to_string().as_str(), msg);
 }
 
 #[cfg(feature = "std")]
@@ -23,5 +24,3 @@ fn source_io_error() {
     assert!(err.source().is_some());
     assert_eq!(err.source().unwrap().to_string().as_str(), "File not found");
 }
-
-// TODO How can we test custom() function associated to serde::ser::Error type?

@@ -7,7 +7,7 @@ pub use std::{vec::Vec, string::String, boxed::Box};
 use std::io;
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
-pub use alloc::{vec::Vec, string::String, boxed::Box, collections::BTreeMap};
+pub use alloc::{vec::Vec, string::String, boxed::Box};
 
 // As a last resort, include our fake IO module
 #[cfg(not(any(feature = "std")))]

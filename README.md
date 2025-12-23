@@ -1,47 +1,34 @@
 # serde-ubj
-[Universal Binary JSON](https://github.com/ubjson/universal-binary-json) format for Rust with [Serde](https://github.com/serde-rs/serde) for both `std` and `no_std` environments.
+[Universal Binary JSON](https://github.com/ubjson/universal-binary-json) data format for Rust with [Serde](https://github.com/serde-rs/serde) (both `std` and `no_std` environments).
 
 <div class="warning">
 <p>This project is in an early stage of development, and <strong>not</strong> production ready yet.<br>Use with caution!</p>
 </div>
 
-This implementation does:
+This project does:
 
-* provide serialization for most of the [Serde data model](https://serde.rs/data-model.html) types,
-* support both `std` (standard) and `no_std` environments (with `alloc`)
-* pass enough unit tests covering at least 85% of its code.
-
-
-### exceptions
-This implementation does **not** support the following Serde types:
-
-* serialization
-  * Serde byte array `u8`
-  * Serde numeric `u64` values greater than Rust `i64::MAX`
-  * Serde numeric `i128` and `u128`
-  * Serde `map`
-  * Serde `string` having length greater than Rust `i64::MAX`,
-
-* deserialization
-  * any Serde types
+* implement the [`serde::Serializer`](https://docs.rs/serde/1.0.228/serde/trait.Serializer.html) trait for most of the [Serde data model](https://serde.rs/data-model.html) types,
+* support optimized `serialize_bytes` (that you can enable via the [`serde_bytes`](https://github.com/serde-rs/bytes) crate),
+* support both `std` (standard) and `no_std` environments (with the built-in `alloc` crate),
+* pass enough unit tests covering at least 85% of its code base.
 
 
 ## tl;dr
 For the impatient.
 
 ### serialization
-With any Rust `std` writer of your choice (i.e., output console, memory buffer, file on disk, network socket, etc.), serialize your user-defined model to Universal Binary JSON in a few instructions: 
+With any Rust `std` writer of your choice (i.e., output console, memory buffer, file on disk, network socket, etc.), serialize any value for which you have either derived 
+or provided a `serde::Serialize` implementation to Universal Binary JSON in a few instructions: 
 
 ```rust,ignore
 use sdt::{error, io};
 
 fn main() -> Result<(), Box<dyn error::Error>> {
 
-  // Create a "serializable" value for which you have either derived 
-  // or provided a serde::Serialize implementation   
-  let value = 123_i16; 
+  let value = 123_i16;
+  // let value = ... my model type ... 
   
-  // Create an IO writer and then serialize the value to it
+  // With any IO writer, serialize the value
   let mut w: io::Write = io::stdout();
   serde_ubj::to_writer(&w, &value)?;
 }
@@ -50,8 +37,17 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 ### deserialization
 Coming soon.
 
-## book
-Coming soon.
+## exceptions
+This implementation does **not** support the following Serde types:
+
+* serialization
+  * Serde byte array
+  * Serde numeric `u64` values greater than Rust `i64::MAX`
+  * Serde numeric `i128` and `u128`
+  * Serde `string` having length greater than Rust `i64::MAX`,
+
+* deserialization
+  * any Serde types
 
 
 ## no_std
@@ -67,3 +63,6 @@ edition = "2024"
 serde_ubj = { version = "0.2.0", default-features = false, features = ["alloc"] }
 # ... add more Serde dependencies as needed ...
 ```
+
+## book
+Coming soon.
