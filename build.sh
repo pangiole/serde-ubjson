@@ -4,7 +4,7 @@ set -euo pipefail
 readonly script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 no_std=''
-[[ "${1:-''}" == "no_std" ]] && no_std="--no-default-features --features alloc"
+[[ "${1:-''}" == "--no-std" ]] && no_std="--no-default-features --features embedded-io"
 
 
 function step {

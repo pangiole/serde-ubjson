@@ -1,37 +1,38 @@
 #![doc = include_str!("../README.md")]
 #![warn(missing_docs)]
-
-// Apply the no_std attribute to this crate, which prevents it from linking to the standard library,
-// under the condition that the "std" feature is not enabled.
-//
-// It is useful to make this create as a "hybrid crate" that can function in both standard (std)
-// and bare-metal (no_std) environments.
-//
 #![cfg_attr(not(feature = "std"), no_std)]
 
-
-#[cfg(not(any(feature = "std", feature = "alloc")))]
+#[cfg(not(any(feature = "std", feature = "embedded-io")))]
 compile_error! {
-    "serde_ubj requires that either `std` (default) or `alloc` features to be enabled"
+    "serde_ubj requires that either `std` (default) or `embedded-io` features to be enabled"
 }
-
-#[cfg(feature = "alloc")]
-extern crate alloc;
 
 #[cfg(feature = "std")]
 extern crate std;
 
-mod prelude;
+// Our serde_ubj crate requires the alloc build-in crate for either 'std' or 'embedded-io' features.
+extern crate alloc;
 
-/// About errors
-mod err;
-pub use err::UbjError;
+#[cfg(any(feature = "std", feature = "embedded-io"))]
+mod inner {
 
-mod markers;
+    #[cfg(feature = "std")]
+    pub use std::{io::BufRead as IoBufRead, io::Error as IoError, io::Write as IoWrite};
 
-mod ser;
-pub use ser::to_writer;
+    #[cfg(all(not(feature = "std"), feature = "embedded-io"))]
+    pub use embedded_io::{BufRead as IoBufRead, ErrorKind as IoError, Write as IoWrite};
 
-// TODO mod de
-// TODO pub de::from_reader
+    pub mod de;
+    pub mod err;
+    mod markers;
+    mod reader;
+    pub mod ser;
+    mod writer;
+}
 
+// Re-exports
+
+pub use inner::de::{from_vec, from_buf_reader};
+pub use inner::err::UbjError;
+pub use inner::err::UbjResult;
+pub use inner::ser::{to_vec, to_writer};
